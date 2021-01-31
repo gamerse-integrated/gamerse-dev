@@ -13,7 +13,7 @@ class Player
             SELECT
                 userName,nickName
             FROM
-                players;
+                player;
         ";
 
         try {
@@ -31,7 +31,7 @@ class Player
             SELECT
                 userName,nickName
             FROM
-                players
+                player
             WHERE userName = ?;
         ";
 
@@ -48,7 +48,7 @@ class Player
     public function insert(array $input)
     {
         $statement = "
-            INSERT INTO players
+            INSERT INTO player
                 (UID,userName,nickName,mail,dob,gender,accountStatus)
             VALUES
                 (:UID,:userName,:nickName,:mail,:dob,:gender,:accountStatus);
@@ -67,7 +67,7 @@ class Player
     {
         $statement = "
             
-            UPDATE `players` SET `name`=:name WHERE `userName` = :userName
+            UPDATE `player` SET `name`=:name WHERE `userName` = :userName
         ";
 
         try {
@@ -86,7 +86,7 @@ class Player
     public function delete($userName)
     {
         $statement = "
-            DELETE FROM players
+            DELETE FROM player
             WHERE userName = :userName;
         ";
 

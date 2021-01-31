@@ -122,7 +122,7 @@ function deleteUser($player,$userName)
 
 function valuserNameatePerson($input)
 {
-    if (!isset($input['name'])) {
+    if (!isset($input['userName'])) {
         return false;
     }
 
@@ -133,7 +133,7 @@ function unprocessableEntityResponse()
 {
     $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
     $response['body'] = json_encode([
-        'error' => 'InvaluserName input',
+        'error' => 'Invalid input',
     ]);
     return $response;
 }
