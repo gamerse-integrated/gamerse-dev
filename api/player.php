@@ -1,9 +1,39 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
-include_once '../config/Database.php';
-include_once '../models/Player.php';
+ 
+ 
+ // header("Access-Control-Allow-Origin: *");
+ // header("Content-Type: application/json; charset=UTF-8");
+ // header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
+ include_once '../config/Database.php';
+ include_once '../models/Player.php';
+ 
+ // Allow from any origin
+ function cors() {
+   if (isset($_SERVER['HTTP_ORIGIN'])) {
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    header("Access-Control-Allow-Headers: Origin, Authorization, X-Requested-With, Content-Type, Accept");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Max-Age: 86400');    // cache for 1 day
+}
+
+// Access-Control headers are received during OPTIONS requests
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+
+    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+        // may also be using PUT, PATCH, HEAD etc
+        header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS");
+
+    if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+        header("Access-Control-Allow-Headers: Origin, Authorization, X-Requested-With, Content-Type, Accept");
+
+    exit(0);
+}
+}
+cors();
+
+
+
 
 // instantiate database and product object
 $database = new Database();
@@ -21,10 +51,11 @@ parse_str($query_str, $uri);
 // $uri = explode('/', $uri);
 $userName = null;
 if (isset($uri['userName'])) {
-    $userName = (int) $uri['userName'];
+    $userName = $uri['userName'];
 }
 // print_r($uri);
 // echo("userName: ".$userName);
+
 
 
 switch ($requestMethod) {
@@ -37,6 +68,7 @@ switch ($requestMethod) {
         ;
         break;
     case 'POST':
+        // $response = postHey($player);
         $response = createUser($player);
         break;
     case 'PUT':
@@ -78,12 +110,26 @@ function getUser($player,$userName)
     return $response;
 }
 
+function postHey($player)
+{
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    // print_r($input);
+    // if (!validatePerson($input)) {
+    //     return unprocessableEntityResponse();
+    // }
+    // $player->insert($input);
+    $response['status_code_header'] = 'HTTP/1.1 201 Created';
+    $response['body'] = null;
+    return $response;
+}
+
 function createUser($player)
 {
 
     $input = (array) json_decode(file_get_contents('php://input'), true);
     // print_r($input);
-    if (!valuserNameatePerson($input)) {
+    if (!validatePerson($input)) {
         return unprocessableEntityResponse();
     }
     $player->insert($input);
@@ -99,7 +145,7 @@ function updateUser($player,$userName)
         return notFoundResponse();
     }
     $input = (array) json_decode(file_get_contents('php://input'), true);
-    if (!valuserNameatePerson($input)) {
+    if (!validatePerson($input)) {
         return unprocessableEntityResponse();
     }
     $player->update($userName, $input);
@@ -120,7 +166,7 @@ function deleteUser($player,$userName)
     return $response;
 }
 
-function valuserNameatePerson($input)
+function validatePerson($input)
 {
     if (!isset($input['userName'])) {
         return false;
