@@ -59,7 +59,7 @@ class Player
             $statement->execute(['userName'=>$input['userName'],'UID'=>$input['UID'],'nickName'=>$input['nickName'],'mail'=>$input['mail'],'dob'=>$input['dob'],'gender'=>$input['gender'],'accountStatus'=>$input['accountStatus']]);
             return $statement->rowCount();
         } catch (PDOException $e) {
-            exit($e->getMessage());
+            echo $e->getMessage();
         }
     }
 

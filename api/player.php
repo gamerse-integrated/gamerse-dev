@@ -100,10 +100,12 @@ function getAllUsers($player)
 
 function getUser($player,$userName)
 {
+    // echo $userName;
     $result = $player->find($userName);
     if (!$result) {
         return notFoundResponse();
     }
+    // $result = 'hi';
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
     $response['body'] = json_encode($result);
     
@@ -132,6 +134,11 @@ function createUser($player)
     if (!validatePerson($input)) {
         return unprocessableEntityResponse();
     }
+    print_r($input);
+
+    //check if user exists
+    // if exists , then return error
+    // else create player
     $player->insert($input);
     $response['status_code_header'] = 'HTTP/1.1 201 Created';
     $response['body'] = null;
