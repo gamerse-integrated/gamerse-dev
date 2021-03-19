@@ -7,6 +7,22 @@ class Player
     {
         $this->db = $db;
     }
+    public function setOnlineStatus($email){
+        $statement = "
+            UPDATE `player` SET `onlineStatus`=CURRENT_TIMESTAMP() WHERE `mail`=:email
+        ";
+        
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array(
+                'email' => $email
+            ));
+            return $statement->rowCount();
+        } catch (PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
     public function findAll()
     {
         $statement = "

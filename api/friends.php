@@ -5,7 +5,7 @@
  // header("Content-Type: application/json; charset=UTF-8");
  // header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
  include_once '../config/Database.php';
- include_once '../models/Player.php';
+ include_once '../models/Friends.php';
  
  // Allow from any origin
  function cors() {
@@ -40,7 +40,7 @@ $database = new Database();
 $db = $database->getConnection();
 
 // initialize object
-$player = new Player($db);
+$friends = new Friends($db);
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 // $uri = parse_url($_SERVER['REQUEST_URI']);
@@ -50,51 +50,27 @@ parse_str($query_str, $uri);
 // print_r($uri);
 // $uri = explode('/', $uri);
 $userName = null;
-if (isset($uri['userName'])) {
-    $userName = $uri['userName'];
+if (isset($uri['username'])) {
+    $userName = $uri['username'];
 }
-
-$email = null;
-if(isset($uri['email'])){
-    $email = $uri['email'];
-    $email_received = true;
-}
-
-// echo $email;
-
 // print_r($uri);
 // echo("userName: ".$userName);
 
 
 
 switch ($requestMethod) {
-    case 'GET':
-        if ($userName) {
-            $response = getUser($player,$userName);
-        } else {
-            $response = getAllUsers($player);
-        }
-        ;
+    case 'GET':  
+        $response = getAllFriends($friends,$userName);          
         break;
     case 'POST':
-        // $response = postHey($player);
-        if(true){
-            // $response = $email;
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
-            $response = $uri;
-            // $response = setOnlineStatus($player,$email);
-        }
-        else{
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
-            $response = $uri;
-            // $response = createUser($player);
-        };
+        // $response = postHey($friends);
+        $response = createUser($friends);
         break;
     case 'PUT':
-        $response = updateUser($player,$userName);
+        $response = updateUser($friends,$userName);
         break;
     case 'DELETE':
-        $response = deleteUser($player,$userName);
+        $response = deleteUser($friends,$userName);
         break;
     default:
         $response = notFoundResponse();
@@ -107,25 +83,20 @@ if ($response['body']) {
 }
 
 
-function setOnlineStatus($player,$email){
-    $result = $player->setOnlineStatus($email);
-    $response['status_code_header'] = 'HTTP/1.1 200 OK';
-    $response['body'] = json_encode($result);
-    return $response;
-}
 
-function getAllUsers($player)
+
+function getAllFriends($friends,$userName)
 {
-    $result = $player->findAll();
+    $result = $friends->findAllFriends($userName);
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
     $response['body'] = json_encode($result);
     return $response;
 }
 
-function getUser($player,$userName)
+function getUser($friends,$userName)
 {
     // echo $userName;
-    $result = $player->find($userName);
+    $result = $friends->find($userName);
     if (!$result) {
         return notFoundResponse();
     }
@@ -136,7 +107,7 @@ function getUser($player,$userName)
     return $response;
 }
 
-function postHey($player)
+function postHey($friends)
 {
 
     $input = json_decode(file_get_contents('php://input'), true);
@@ -144,13 +115,13 @@ function postHey($player)
     // if (!validatePerson($input)) {
     //     return unprocessableEntityResponse();
     // }
-    // $player->insert($input);
+    // $friends->insert($input);
     $response['status_code_header'] = 'HTTP/1.1 201 Created';
     $response['body'] = null;
     return $response;
 }
 
-function createUser($player)
+function createUser($friends)
 {
 
     $input = (array) json_decode(file_get_contents('php://input'), true);
@@ -162,16 +133,16 @@ function createUser($player)
 
     //check if user exists
     // if exists , then return error
-    // else create player
-    $player->insert($input);
+    // else create Friends
+    $friends->insert($input);
     $response['status_code_header'] = 'HTTP/1.1 201 Created';
     $response['body'] = null;
     return $response;
 }
 
-function updateUser($player,$userName)
+function updateUser($friends,$userName)
 {
-    $result = $player->find($userName);
+    $result = $friends->find($userName);
     if (!$result) {
         return notFoundResponse();
     }
@@ -179,19 +150,19 @@ function updateUser($player,$userName)
     if (!validatePerson($input)) {
         return unprocessableEntityResponse();
     }
-    $player->update($userName, $input);
+    $friends->update($userName, $input);
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
     $response['body'] = null;
     return $response;
 }
 
-function deleteUser($player,$userName)
+function deleteUser($friends,$userName)
 {
-    $result = $player->find($userName);
+    $result = $friends->find($userName);
     if (!$result) {
         return notFoundResponse();
     }
-    $player->delete($userName);
+    $friends->delete($userName);
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
     $response['body'] = null;
     return $response;
