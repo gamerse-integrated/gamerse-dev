@@ -55,9 +55,9 @@ if (isset($uri['userName'])) {
 }
 
 $email = null;
-if(isset($uri['email'])){
-    $email = $uri['email'];
-    $email_received = true;
+$input = (array) json_decode(file_get_contents('php://input'), true);
+if (isset($input['email'])){
+    $email = $input['email'];
 }
 
 // echo $email;
@@ -78,16 +78,17 @@ switch ($requestMethod) {
         break;
     case 'POST':
         // $response = postHey($player);
-        if(true){
+        if($email != null){
             // $response = $email;
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
-            $response = $uri;
-            // $response = setOnlineStatus($player,$email);
+            // $response['status_code_header'] = 'HTTP/1.1 200 OK';
+            // $response = $uri;
+            $response = setOnlineStatus($player,$email);
         }
         else{
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
-            $response = $uri;
-            // $response = createUser($player);
+            // $response['status_code_header'] = 'HTTP/1.1 200 OK';
+            // $response['body'] = "email null";
+            // $response['body'] = json_encode($uri);
+            $response = createUser($player);
         };
         break;
     case 'PUT':

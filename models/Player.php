@@ -18,6 +18,7 @@ class Player
             $statement->execute(array(
                 'email' => $email
             ));
+            // echo "here";
             return $statement->rowCount();
         } catch (PDOException $e) {
             exit($e->getMessage());
