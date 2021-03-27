@@ -54,12 +54,17 @@ $friendName = null;
 $friendRecordId = null;
 $action = null;
 $fr = null;
+$id = null;
+$friendid = null;
 
 if (isset($uri['userName'])) {
     $userName = $uri['userName'];
 }
 if (isset($uri['fr'])) {
     $fr = $uri['fr'];
+}
+if (isset($uri['id'])) {
+    $id = $uri['id'];
 }
 
 // for post data
@@ -78,6 +83,12 @@ if (isset($input['friendName'])){
 if (isset($input['userName'])){
     $userName = $input['userName'];
 }
+if (isset($input['friendid'])){
+    $friendid = $input['friendid'];
+}
+if (isset($input['message'])){
+    $message = $input['message'];
+}
 
 // echo($friendRecordId);
 
@@ -89,13 +100,18 @@ if (isset($input['userName'])){
 switch ($requestMethod) {
     case 'GET':  
         if (isset($fr)) $response = findFriendRequests($friends, $userName);
+        else if (isset($id)) $response = getChatMessages($friends, $id);          
         else $response = getAllFriends($friends,$userName);          
         break;
     case 'POST':
         if(isset($friendName) && isset($userName)){
             // echo("if "); 
             $response = sendFriendReq($friends,$userName,$friendName);
-        }else{
+        }
+        else if(isset($message)) {
+            $response = addMessage($friends,$friendid,$message);
+        }
+        else{
             echo("else "); 
             if ($action == 'A'){
                 // echo("Accept");
@@ -137,9 +153,32 @@ function getAllFriends($friends,$userName)
     $response['body'] = json_encode($result);
     return $response;
 }
+
 function findFriendRequests($friends,$userName)
 {
     $result = $friends->findFriendRequests($userName);
+    if (!$result) {
+        return notFoundResponse();
+    }
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = json_encode($result);
+    return $response;
+}
+
+function addMessage($friends,$friendid, $message)
+{
+    $result = $friends->addMessage($friendid, $message);
+    if (!$result) {
+        return notFoundResponse();
+    }
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = json_encode($result);
+    return $response;
+}
+
+function getChatMessages($friends, $id)
+{
+    $result = $friends->getChatMessages($id);
     if (!$result) {
         return notFoundResponse();
     }

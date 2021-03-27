@@ -52,7 +52,28 @@ class Friends{
             $statement->execute(array($id));
             
             $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-            print_r($result);
+            // print_r($result);
+            return $result;
+        } catch (PDOException $e) {
+            exit($e->getMessage());
+        }
+        
+    }
+    public function getChatMessages($id){
+        $statement = "
+            SELECT
+                message, unix_timestamp(timestamp) * 1000 as timestamp
+            FROM
+                chat
+            WHERE id=?;
+            ";
+        try {
+            $statement = $this->db->prepare($statement);
+           
+            $statement->execute(array($id));
+            
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            // print_r($result);
             return $result;
         } catch (PDOException $e) {
             exit($e->getMessage());
@@ -70,6 +91,25 @@ class Friends{
             $statement->execute(array(
                 'status' => 'F',
                 'id' => $id,  
+            ));
+            return $statement->rowCount();
+        } catch (PDOException $e) {
+            exit($e->getMessage());
+        }
+        
+    }
+    public function addMessage($id,$message){
+        $statement = "
+        INSERT INTO chat (id, message , timestamp)
+        VALUES (:id , :message, CURRENT_TIMESTAMP());
+        ";
+        
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array(
+                'id' => $id,  
+                'message' => $message,  
             ));
             return $statement->rowCount();
         } catch (PDOException $e) {
