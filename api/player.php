@@ -59,9 +59,12 @@ $input = (array) json_decode(file_get_contents('php://input'), true);
 if (isset($input['email'])){
     $email = $input['email'];
 }
-
+if (isset($uri['email'])) {
+    $email = $uri['email'];
+}
+// print_r($input);
 // echo $email;
-
+// echo "hi";
 // print_r($uri);
 // echo("userName: ".$userName);
 
@@ -71,8 +74,13 @@ switch ($requestMethod) {
     case 'GET':
         if ($userName) {
             $response = getUser($player,$userName);
-        } else {
+        } 
+        else if($email != null){
+            $response = getUserName($player,$email);
+        }
+        else {
             $response = getAllUsers($player);
+            // echo 'hi';
         }
         ;
         break;
@@ -127,6 +135,19 @@ function getUser($player,$userName)
 {
     // echo $userName;
     $result = $player->find($userName);
+    if (!$result) {
+        return notFoundResponse();
+    }
+    // $result = 'hi';
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = json_encode($result);
+    
+    return $response;
+}
+function getUserName($player,$email)
+{
+    // echo $email;
+    $result = $player->getUserName($email);
     if (!$result) {
         return notFoundResponse();
     }

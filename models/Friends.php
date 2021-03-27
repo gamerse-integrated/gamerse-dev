@@ -6,9 +6,9 @@ class Friends{
         $this->db = $db;
     }
     public function findAllFriends($id){
-        $statement1 = "
+        $statement = "
             SELECT
-                pid2 as friend, status
+                id,pid2 as friend, status
             FROM
                 friends
             WHERE pid1=? 
@@ -16,7 +16,7 @@ class Friends{
             union
 
             SELECT
-                pid1 as friend, status
+                id,pid1 as friend, status
             FROM
                 friends
             WHERE  pid2=?;
@@ -24,7 +24,7 @@ class Friends{
         
 
         try {
-            $statement = $this->db->prepare($statement1);
+            $statement = $this->db->prepare($statement);
            
             $statement->execute(array($id, $id));
             
@@ -36,6 +36,60 @@ class Friends{
         }
         
     }
-    // sendRequest, acceptRequest, removeFriend(reject same thing)
+    public function addFriend($id){
+        $statement = "
+            update 'friends' set status = :status where id = :id
+        ";
+        
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array(
+                'status' => 'F',
+                'id' => $id,  
+            ));
+            return $statement->rowCount();
+        } catch (PDOException $e) {
+            exit($e->getMessage());
+        }
+        
+    }
+    public function sendFriendReq($userName,$friendName){
+        $statement = "
+        INSERT INTO friends (pid1, pid2 , status)
+        VALUES (:pid1 , :pid2, 'P');
+        ";
+        
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array(
+                'pid1' => $userName,  
+
+                'pid2' => $friendName,  
+            ));
+            return $statement->rowCount();
+        } catch (PDOException $e) {
+            exit($e->getMessage());
+        }
+        
+    }
+    public function rFriend($id){
+        $statement = "
+            delete from friends where id = :id
+        ";
+        
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array(
+                'id' => $id,  
+            ));
+            return $statement->rowCount();
+        } catch (PDOException $e) {
+            exit($e->getMessage());
+        }
+        
+    }
     
 }

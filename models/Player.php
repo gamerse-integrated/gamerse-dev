@@ -8,18 +8,23 @@ class Player
         $this->db = $db;
     }
     public function setOnlineStatus($email){
-        $statement = "
+        $statement1 = "
             UPDATE `player` SET `onlineStatus`=CURRENT_TIMESTAMP() WHERE `mail`=:email
         ";
-        
+        // $statement2 = "select userName from player where mail = :email";
 
         try {
-            $statement = $this->db->prepare($statement);
-            $statement->execute(array(
+            $statement1 = $this->db->prepare($statement1);
+            $statement1->execute(array(
                 'email' => $email
             ));
             // echo "here";
-            return $statement->rowCount();
+            // $statement2 = $this->db->prepare($statement2);
+            // $statement2->execute(array(
+            //     'email' => $email
+            // ));
+            // $result = $statement->fetch(PDO::FETCH_ASSOC);
+            return $statement1->rowCount();
         } catch (PDOException $e) {
             exit($e->getMessage());
         }
@@ -61,7 +66,25 @@ class Player
             exit($e->getMessage());
         }
     }
+    public function getUserName($email)
+    {
+        $statement = "
+            SELECT
+                userName
+            FROM
+                player
+            WHERE mail = ?;
+        ";
 
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array($email));
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
     public function insert(array $input)
     {
         $statement = "

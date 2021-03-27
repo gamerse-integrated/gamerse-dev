@@ -50,9 +50,31 @@ parse_str($query_str, $uri);
 // print_r($uri);
 // $uri = explode('/', $uri);
 $userName = null;
+$friendName = null;
+$friendRecordId = null;
+$action = null;
+
 if (isset($uri['username'])) {
     $userName = $uri['username'];
 }
+
+// for post data
+$input = (array) json_decode(file_get_contents('php://input'), true);
+
+
+if (isset($input['action'])){
+    $action = $input['action'];
+}
+if (isset($input['friendRecordId'])){
+    $friendRecordId = $input['friendRecordId'];
+}
+if (isset($input['friendName'])){
+    $friendName = $input['friendName'];
+}
+if (isset($input['userName'])){
+    $userName = $input['userName'];
+}
+
 // print_r($uri);
 // echo("userName: ".$userName);
 
@@ -63,8 +85,17 @@ switch ($requestMethod) {
         $response = getAllFriends($friends,$userName);          
         break;
     case 'POST':
-        // $response = postHey($friends);
-        $response = createUser($friends);
+        if($friendName && $userName){
+            $response = sendFriendReq($friends,$userName,$friendName);
+        }else{
+            if ($action == 'A'){
+                $response = addFriend($friends,$friendRecordId);
+            }
+            else if($action == 'R'){
+                $response = rFriend($friends,$friendRecordId);
+            }        
+        }
+        
         break;
     case 'PUT':
         $response = updateUser($friends,$userName);
@@ -88,6 +119,46 @@ if ($response['body']) {
 function getAllFriends($friends,$userName)
 {
     $result = $friends->findAllFriends($userName);
+    if (!$result) {
+        return notFoundResponse();
+    }
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = json_encode($result);
+    return $response;
+}
+
+
+function addFriend($friends,$friendRecordId)
+{
+    $result = $friends->addFriend($friendRecordId);
+    if (!$result) {
+        return notFoundResponse();
+    }
+    // echo "found response";
+    // echo $friendRecordId;
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = json_encode($result);
+    return $response;
+}
+function sendFriendReq($friends,$userName,$friendName)
+{
+    $result = $friends->sendFriendReq($userName,$friendName);
+    if (!$result) {
+        return notFoundResponse();
+    }
+    // echo "found response";
+    // echo $friendRecordId;
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = json_encode($result);
+    return $response;
+}
+
+function rFriend($friends,$friendRecordId)
+{
+    $result = $friends->rFriend($friendRecordId);
+    if (!$result) {
+        return notFoundResponse();
+    }
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
     $response['body'] = json_encode($result);
     return $response;
@@ -107,19 +178,6 @@ function getUser($friends,$userName)
     return $response;
 }
 
-function postHey($friends)
-{
-
-    $input = json_decode(file_get_contents('php://input'), true);
-    // print_r($input);
-    // if (!validatePerson($input)) {
-    //     return unprocessableEntityResponse();
-    // }
-    // $friends->insert($input);
-    $response['status_code_header'] = 'HTTP/1.1 201 Created';
-    $response['body'] = null;
-    return $response;
-}
 
 function createUser($friends)
 {
