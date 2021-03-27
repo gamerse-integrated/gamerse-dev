@@ -33,7 +33,7 @@ class Player
     {
         $statement = "
             SELECT
-                userName,nickName
+                userName,nickName,unix_timestamp(onlineStatus) * 1000 as onlineStatus
             FROM
                 player;
         ";
