@@ -53,9 +53,13 @@ $userName = null;
 $friendName = null;
 $friendRecordId = null;
 $action = null;
+$fr = null;
 
-if (isset($uri['username'])) {
-    $userName = $uri['username'];
+if (isset($uri['userName'])) {
+    $userName = $uri['userName'];
+}
+if (isset($uri['fr'])) {
+    $fr = $uri['fr'];
 }
 
 // for post data
@@ -75,6 +79,8 @@ if (isset($input['userName'])){
     $userName = $input['userName'];
 }
 
+// echo($friendRecordId);
+
 // print_r($uri);
 // echo("userName: ".$userName);
 
@@ -82,16 +88,21 @@ if (isset($input['userName'])){
 
 switch ($requestMethod) {
     case 'GET':  
-        $response = getAllFriends($friends,$userName);          
+        if (isset($fr)) $response = findFriendRequests($friends, $userName);
+        else $response = getAllFriends($friends,$userName);          
         break;
     case 'POST':
-        if($friendName && $userName){
+        if(isset($friendName) && isset($userName)){
+            // echo("if "); 
             $response = sendFriendReq($friends,$userName,$friendName);
         }else{
+            echo("else "); 
             if ($action == 'A'){
+                // echo("Accept");
                 $response = addFriend($friends,$friendRecordId);
             }
             else if($action == 'R'){
+                // echo("Reject");
                 $response = rFriend($friends,$friendRecordId);
             }        
         }
@@ -119,6 +130,16 @@ if ($response['body']) {
 function getAllFriends($friends,$userName)
 {
     $result = $friends->findAllFriends($userName);
+    if (!$result) {
+        return notFoundResponse();
+    }
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = json_encode($result);
+    return $response;
+}
+function findFriendRequests($friends,$userName)
+{
+    $result = $friends->findFriendRequests($userName);
     if (!$result) {
         return notFoundResponse();
     }

@@ -36,9 +36,32 @@ class Friends{
         }
         
     }
+    public function findFriendRequests($id){
+        $statement = "
+            SELECT
+                id,pid1
+            FROM
+                friends
+            WHERE pid2=? and status='P';
+            ";
+        
+
+        try {
+            $statement = $this->db->prepare($statement);
+           
+            $statement->execute(array($id));
+            
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            print_r($result);
+            return $result;
+        } catch (PDOException $e) {
+            exit($e->getMessage());
+        }
+        
+    }
     public function addFriend($id){
         $statement = "
-            update 'friends' set status = :status where id = :id
+            update friends set status=:status where id=:id
         ";
         
 
@@ -76,7 +99,7 @@ class Friends{
     }
     public function rFriend($id){
         $statement = "
-            delete from friends where id = :id
+            delete from friends where id=:id
         ";
         
 
