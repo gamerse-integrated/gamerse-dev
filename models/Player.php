@@ -14,6 +14,7 @@ class Player
         // $statement2 = "select userName from player where mail = :email";
 
         try {
+            // print_r($email);
             $statement1 = $this->db->prepare($statement1);
             $statement1->execute(array(
                 'email' => $email
