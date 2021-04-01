@@ -34,7 +34,7 @@ class Player
     {
         $statement = "
             SELECT
-                userName,nickName,unix_timestamp(onlineStatus) * 1000 as onlineStatus
+                userName,nickName,unix_timestamp(onlineStatus) * 1000 as onlineStatus, photoURL
             FROM
                 player;
         ";
