@@ -90,14 +90,14 @@ class Player
     {
         $statement = "
             INSERT INTO player
-                (UID,userName,nickName,mail,dob,gender,accountStatus)
+                (UID,userName,nickName,mail,dob,gender,accountStatus,photoURL)
             VALUES
-                (:UID,:userName,:nickName,:mail,:dob,:gender,:accountStatus);
+                (:UID,:userName,:nickName,:mail,:dob,:gender,:accountStatus,:photoURL);
         ";
 
         try {
             $statement = $this->db->prepare($statement);
-            $statement->execute(['userName'=>$input['userName'],'UID'=>$input['UID'],'nickName'=>$input['nickName'],'mail'=>$input['mail'],'dob'=>$input['dob'],'gender'=>$input['gender'],'accountStatus'=>$input['accountStatus']]);
+            $statement->execute(['userName'=>$input['userName'],'UID'=>$input['UID'],'nickName'=>$input['nickName'],'mail'=>$input['mail'],'dob'=>$input['dob'],'gender'=>$input['gender'],'accountStatus'=>$input['accountStatus'], 'photoURL'=>$input['photoURL']]);
             return $statement->rowCount();
         } catch (PDOException $e) {
             echo $e->getMessage();
