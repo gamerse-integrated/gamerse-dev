@@ -4,8 +4,8 @@
  // header("Access-Control-Allow-Origin: *");
  // header("Content-Type: application/json; charset=UTF-8");
  // header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
- include_once 'config/Database.php';
- include_once 'models/Snake.php';
+ include_once '../config/Database.php';
+ include_once '../models/Snake.php';
  
  // Allow from any origin
  function cors() {
