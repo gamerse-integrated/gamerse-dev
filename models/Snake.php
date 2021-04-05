@@ -7,7 +7,8 @@ class Snake
     {
         $this->db = $db;
     }
-    public function setHighScore($score,$userName){
+    public function setHighScore($score, $userName)
+    {
         $statement1 = "
             UPDATE `snakes` SET `highscore`=:score WHERE `username`=:uname";
 
@@ -22,7 +23,8 @@ class Snake
             exit($e->getMessage());
         }
     }
-    public function setLastGame($score,$userName){
+    public function setLastGame($score, $userName)
+    {
         echo $score;
         echo $userName;
         $statement1 = "
@@ -66,7 +68,7 @@ class Snake
                 highscore
             FROM
                 snakes
-            WHERE userName = ?;
+            WHERE username = ?;
         ";
 
         try {

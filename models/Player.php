@@ -7,7 +7,8 @@ class Player
     {
         $this->db = $db;
     }
-    public function setOnlineStatus($email){
+    public function setOnlineStatus($email)
+    {
         $statement1 = "
             UPDATE `player` SET `onlineStatus`=CURRENT_TIMESTAMP() WHERE `mail`=:email
         ";
@@ -94,10 +95,14 @@ class Player
             VALUES
                 (:UID,:userName,:nickName,:mail,:dob,:gender,:accountStatus,:photoURL);
         ";
-
+        $statement2 = "INSERT INTO snakes (username,lastgame,highscore) VALUES (:userName,0,0)";
         try {
             $statement = $this->db->prepare($statement);
-            $statement->execute(['userName'=>$input['userName'],'UID'=>$input['UID'],'nickName'=>$input['nickName'],'mail'=>$input['mail'],'dob'=>$input['dob'],'gender'=>$input['gender'],'accountStatus'=>$input['accountStatus'], 'photoURL'=>$input['photoURL']]);
+            $statement->execute(['userName' => $input['userName'], 'UID' => $input['UID'], 'nickName' => $input['nickName'], 'mail' => $input['mail'], 'dob' => $input['dob'], 'gender' => $input['gender'], 'accountStatus' => $input['accountStatus'], 'photoURL' => $input['photoURL']]);
+
+            $statement2 = $this->db->prepare($statement2);
+            $statement2->execute(['userName' => $input['userName'],]);
+
             return $statement->rowCount();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -116,7 +121,7 @@ class Player
             $statement->execute(array(
                 'userName' => (int) $userName,
                 'name' => $input['name'],
-                
+
             ));
             return $statement->rowCount();
         } catch (PDOException $e) {
