@@ -1,0 +1,9 @@
+{
+  "name": "Gamerse",
+  "theme_color": "#222831",
+  "background_color": "#eeeeee",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "scope": "/",
+  "start_url": "/"
+}
